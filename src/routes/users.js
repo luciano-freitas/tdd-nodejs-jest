@@ -1,18 +1,28 @@
-module.exports = () => {
+const express = require('express');
 
-  const findAll = (req, res) => {
-    const users = [{
-      name: 'John Doe',
-      mail: 'john@email.com',
-    }];
+module.exports = (app) => {
 
-    res.status(200).json(users);
-  };
+  const router = express.Router();
 
-  const create = (req, res) => {
+  router.get('/', async (req, res, next) => {
+    try {
+      const result = await app.services.user.findAll();
 
-    res.status(201).json(req.body);
-  };
+      return res.status(200).json(result);
+    } catch (error) {
+      return next(error);
+    }
+  });
 
-  return { findAll, create };
+  router.post('/', async (req, res, next) => {
+    try {
+      const result = await app.services.user.save(req.body);
+
+      return res.status(201).json(result[0]);
+    } catch (error) {
+      return next(error);
+    }
+  });
+
+  return router;
 };
